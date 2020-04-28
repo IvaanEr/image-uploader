@@ -11,9 +11,11 @@ defmodule ImageUploader.Application do
       # Start the Ecto repository
       ImageUploader.Repo,
       # Start the endpoint when the application starts
-      ImageUploaderWeb.Endpoint
+      ImageUploaderWeb.Endpoint,
       # Starts a worker by calling: ImageUploader.Worker.start_link(arg)
       # {ImageUploader.Worker, arg},
+      # Start Buffer GenServer
+      {ImageUploader.Buffer, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
