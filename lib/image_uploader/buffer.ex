@@ -32,8 +32,10 @@ defmodule ImageUploader.Buffer do
     {:noreply, [element | state]}
   end
 
+  @impl true
   def handle_info(:schedule_pop, state) do
-    state
+    # TODO si hay algo en la cola, lo mando a S3
+    schedule_pop()
   end
 
   defp schedule_pop() do
