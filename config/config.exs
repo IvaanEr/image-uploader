@@ -18,6 +18,10 @@ config :image_uploader, ImageUploaderWeb.Endpoint,
   pubsub: [name: ImageUploader.PubSub, adapter: Phoenix.PubSub.PG2],
   live_view: [signing_salt: "hy6nQVgy"]
 
+config :ex_aws,
+  access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
+  secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"}
+
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",

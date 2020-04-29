@@ -14,6 +14,7 @@ defmodule ImageUploader.Application do
       ImageUploaderWeb.Endpoint,
       # Starts a worker by calling: ImageUploader.Worker.start_link(arg)
       # {ImageUploader.Worker, arg},
+
       # Start Buffer GenServer
       {ImageUploader.Buffer, []}
     ]
