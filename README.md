@@ -16,14 +16,39 @@ We're also interested to see how you can leverage automated testing to increase 
 Additionally, feel free to mock out the AWS APIs.
 It is not important that you have a working integration with any AWS services.
 Some assumptions you may make:
-- Local network upload speed is 200mbps.
+- Local network upload speed is 200mbps. 
 - Image file size is an average of 4mb.
 - Allocate no more than 50% of bandwidth resources for file uploads at any time.
 - Application will receive roughly 1,000 images per minute but can also receive bursts of many more that we'll need to handle.
 
-    You may use any libraries or tools you think are best for the job.
-    Please limit this exercise to no more than 4 hours.
-    Be prepared to explain your thought process and how you'd expand on the feature set given more time.
+> You may use any libraries or tools you think are best for the job.
+> Please limit this exercise to no more than 4 hours.
+> Be prepared to explain your thought process and how you'd expand on the feature set given more time.
+
+### Flow Diagram
+![image](./diagram.png)
+
+
+### Test
+Here is a script to _simulate_ many devices uploading images at the same time
+
+```bash
+seq 1 100000 | xargs -n1 -P 150 bash -c "curl --request POST \
+    --url http://localhost:4000/image \
+    --header 'content-type: multipart/form-data;' \
+    --form device_id=device_1 \
+    --form image=adsfkjasdfaskjfsadjf"
+```
+
+> Now the application saves the images into the file system under /tmp
+> with a delay of 2 seconds in every save to simulate the upload to S3
+> [~4mb image at ~2mb/s speed => ~2s time]
+
+### Improvements
+  * In this approach the device don't know if the image was succesfully saved.
+  The cliente may provide a service to communicate if an image was succesfully saved or not, so when the actual save is done (maybe with retries) the application call this service telling the device the actual result
+
+  * Here we have only one process running (almost) all the time, taking an image and saving it in S3. Ideally, have a pool of workers running in parallel for this purpose
 
 ### Start
 To start your Phoenix server:
@@ -31,15 +56,3 @@ To start your Phoenix server:
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.setup`
   * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix

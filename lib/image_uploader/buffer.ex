@@ -1,5 +1,11 @@
 defmodule ImageUploader.Buffer do
+  @moduledoc """
+  Handle stack state to queueing images before saving
+  """
   use GenServer
+
+  @wait_time 1000
+  @upload_delay 2000
 
   # TODO change to AwsUtils if you want to save there
   alias ImageUploader.FileUtils
@@ -43,13 +49,20 @@ defmodule ImageUploader.Buffer do
   end
 
   defp schedule_pop() do
-    Process.send_after(self(), :schedule_pop, 5000)
+    Process.send_after(self(), :schedule_pop, @wait_time)
   end
 
   defp upload_images([]), do: :ok
   defp upload_images([{id, image}|tail]) do
     %DateTime{microsecond: {now, _}} = DateTime.utc_now()
-    FileUtils.upload_binary(image, "device_#{id}_#{now}")
+    # Replace to AwsUtils when needed
+    FileUtils.upload_binary(image, "img:#{id}:#{now}")
+
+    # - Local network upload speed is 200mbps.
+    # - Image file size is an average of 4mb.
+    # So every image take ~2seg to upload
+    :timer.sleep(@upload_delay)
+
     upload_images(tail)
   end
 end

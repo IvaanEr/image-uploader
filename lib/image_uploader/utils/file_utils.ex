@@ -8,8 +8,9 @@ defmodule ImageUploader.FileUtils do
 
   def upload_binary(binary, path) do
     case File.write("#{@temp}/#{path}", binary) do
-      :ok -> :ok
-      {:error, res} -> Logger.debug(res)
+      :ok -> Logger.debug("File #{path} saved")
+            :ok
+      {:error, res} -> Logger.error(res)
                       :error
     end
   end

@@ -12,7 +12,7 @@ defmodule ImageUploader.AwsUtils do
   def upload_file(file_path) do
     case get_file(file_path) do
       {:ok, binary} ->
-        upload_to_s3(binary, file_path)
+        upload_binary(binary, file_path)
 
       {:error, err} ->
         IO.puts(err)
@@ -35,6 +35,9 @@ defmodule ImageUploader.AwsUtils do
     end
   end
 
+  @doc """
+  Upload a binary to S3
+  """
   def upload_binary(binary, path) do
     %{status_code: status} =
       ExAws.S3.put_object(@s3_bucket, path, binary)
@@ -54,15 +57,4 @@ defmodule ImageUploader.AwsUtils do
     end
   end
 
-  @spec upload_to_s3(binary(), String.t()) :: :error | :ok
-  defp upload_to_s3(bin, path) do
-    %{status_code: status} =
-      ExAws.S3.put_object(@s3_bucket, path, bin)
-      |> ExAws.request!()
-
-    case status do
-      200 -> :ok
-      _ -> :error
-    end
-  end
 end
